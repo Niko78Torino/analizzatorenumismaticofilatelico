@@ -93,6 +93,22 @@
         .donation-btn:hover {
             background-color: #15803d;
         }
+        .uploader-box {
+            width: 100%;
+            height: 180px; /* Altezza ridotta per i box doppi */
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .uploader-box:hover {
+            border-color: #2563eb;
+            background-color: #f9fafb;
+        }
     </style>
 </head>
 <body class="bg-blue-50 text-gray-800 flex flex-col min-h-screen">
@@ -112,7 +128,7 @@
                 <!-- Sezione di Upload -->
                 <div class="flex flex-col items-center justify-center">
                     <!-- Selezione Tipo Analisi -->
-                    <div id="analysis-type" class="flex justify-center space-x-6 mb-6">
+                    <div class="flex justify-center space-x-6 mb-6">
                         <label class="flex items-center space-x-2 cursor-pointer">
                             <input type="radio" name="item-type" value="coin" class="form-radio" checked>
                             <span data-key="coinLabel" class="text-gray-700 font-medium">Moneta</span>
@@ -123,22 +139,54 @@
                         </label>
                     </div>
 
-                    <div id="image-uploader" class="w-full h-64 border-2 border-dashed border-gray-300 rounded-lg flex flex-col justify-center items-center cursor-pointer hover:border-blue-500 hover:bg-gray-50 transition-colors">
-                        <input type="file" id="file-input" class="hidden" accept="image/*">
-                        <div id="upload-prompt">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            <p class="mt-2 text-sm text-gray-600">
-                                <span data-key="uploadClick" class="font-semibold text-blue-600">Clicca per caricare</span> <span data-key="uploadDrag">o trascina un'immagine</span>
-                            </p>
-                            <p data-key="uploadFormats" class="text-xs text-gray-500">PNG, JPG, GIF fino a 10MB</p>
+                    <!-- Contenitore per gli uploader -->
+                    <div id="upload-container" class="w-full">
+                        <!-- Uploader per monete (doppio) -->
+                        <div id="coin-uploaders" class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p data-key="frontLabel" class="text-center font-semibold mb-2">Fronte</p>
+                                <div id="image-uploader-front" class="uploader-box">
+                                    <input type="file" id="file-input-front" class="hidden" accept="image/*">
+                                    <div id="upload-prompt-front">
+                                        <svg class="mx-auto h-10 w-10 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                                        <p data-key="uploadClickShort" class="mt-1 text-xs text-blue-600">Carica immagine</p>
+                                    </div>
+                                    <img id="image-preview-front" src="" alt="Anteprima fronte" class="hidden w-full h-full object-contain rounded-lg">
+                                </div>
+                            </div>
+                            <div>
+                                <p data-key="backLabel" class="text-center font-semibold mb-2">Retro</p>
+                                <div id="image-uploader-back" class="uploader-box">
+                                    <input type="file" id="file-input-back" class="hidden" accept="image/*">
+                                    <div id="upload-prompt-back">
+                                        <svg class="mx-auto h-10 w-10 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                                        <p data-key="uploadClickShort" class="mt-1 text-xs text-blue-600">Carica immagine</p>
+                                    </div>
+                                    <img id="image-preview-back" src="" alt="Anteprima retro" class="hidden w-full h-full object-contain rounded-lg">
+                                </div>
+                            </div>
                         </div>
-                        <img id="image-preview" src="" alt="Anteprima oggetto" class="hidden w-full h-full object-contain rounded-lg">
+                        <!-- Uploader per francobolli (singolo) -->
+                        <div id="stamp-uploader" class="hidden w-full">
+                             <div class="uploader-box h-64">
+                                <input type="file" id="file-input-stamp" class="hidden" accept="image/*">
+                                <div id="upload-prompt-stamp">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                                    <p class="mt-2 text-sm text-gray-600"><span data-key="uploadClick" class="font-semibold text-blue-600">Clicca per caricare</span> <span data-key="uploadDrag">o trascina un'immagine</span></p>
+                                    <p data-key="uploadFormats" class="text-xs text-gray-500">PNG, JPG, GIF fino a 10MB</p>
+                                </div>
+                                <img id="image-preview-stamp" src="" alt="Anteprima francobollo" class="hidden w-full h-full object-contain rounded-lg">
+                            </div>
+                        </div>
                     </div>
-                    <button id="analyze-button" data-key="analyzeButton" class="mt-4 w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-transform transform active:scale-95" disabled>
-                        Analizza
-                    </button>
+                    <div class="mt-4 w-full flex space-x-4">
+                        <button id="analyze-button" data-key="analyzeButton" class="flex-grow bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-transform transform active:scale-95" disabled>
+                            Analizza
+                        </button>
+                        <button id="reset-button" data-key="resetButton" class="bg-gray-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-transform transform active:scale-95">
+                            Reset
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Sezione Risultati -->
@@ -210,11 +258,8 @@
 
     <script>
         // --- Elementi del DOM ---
-        const imageUploader = document.getElementById('image-uploader');
-        const fileInput = document.getElementById('file-input');
-        const uploadPrompt = document.getElementById('upload-prompt');
-        const imagePreview = document.getElementById('image-preview');
         const analyzeButton = document.getElementById('analyze-button');
+        const resetButton = document.getElementById('reset-button');
         const loader = document.getElementById('loader');
         const resultsContent = document.getElementById('results-content');
         const initialMessage = document.getElementById('initial-message');
@@ -227,8 +272,30 @@
         const closeModalButton = document.getElementById('close-modal-button');
         const langItBtn = document.getElementById('lang-it');
         const langEnBtn = document.getElementById('lang-en');
+        const itemTypeRadios = document.querySelectorAll('input[name="item-type"]');
+        const coinUploaders = document.getElementById('coin-uploaders');
+        const stampUploader = document.getElementById('stamp-uploader');
 
-        let base64ImageData = null;
+        // Uploader Fronte
+        const uploaderFront = document.getElementById('image-uploader-front');
+        const inputFront = document.getElementById('file-input-front');
+        const promptFront = document.getElementById('upload-prompt-front');
+        const previewFront = document.getElementById('image-preview-front');
+        
+        // Uploader Retro
+        const uploaderBack = document.getElementById('image-uploader-back');
+        const inputBack = document.getElementById('file-input-back');
+        const promptBack = document.getElementById('upload-prompt-back');
+        const previewBack = document.getElementById('image-preview-back');
+
+        // Uploader Francobollo
+        const uploaderStamp = document.getElementById('stamp-uploader').querySelector('.uploader-box');
+        const inputStamp = document.getElementById('file-input-stamp');
+        const promptStamp = document.getElementById('upload-prompt-stamp');
+        const previewStamp = document.getElementById('image-preview-stamp');
+
+        let base64ImageDataFront = null;
+        let base64ImageDataBack = null;
         let currentLanguage = 'it';
 
         // --- Oggetto Traduzioni ---
@@ -238,10 +305,14 @@
                 mainSubtitle: "Carica la foto di una moneta o di un francobollo per ottenere un'analisi AI.",
                 coinLabel: "Moneta",
                 stampLabel: "Francobollo",
+                frontLabel: "Fronte",
+                backLabel: "Retro",
                 uploadClick: "Clicca per caricare",
                 uploadDrag: "o trascina un'immagine",
+                uploadClickShort: "Carica immagine",
                 uploadFormats: "PNG, JPG, GIF fino a 10MB",
                 analyzeButton: "Analizza",
+                resetButton: "Reset",
                 resultsTitle: "Risultati dell'Analisi",
                 identificationLabel: "Identificazione",
                 periodLabel: "Periodo/Anno di Emissione",
@@ -254,26 +325,30 @@
                 privacyTitle: "Informativa sulla Privacy",
                 privacyDateLabel: "Data di entrata in vigore:",
                 privacyDate: "7 agosto 2025",
-                privacyIntro: "La tua privacy è la nostra massima priorità. Questa applicazione è stata progettata per funzionare senza raccogliere, salvare o utilizzare alcuna informazione personale o dato che ti riguarda.",
+                privacyIntro: "La tua privacy è la nostra massima priorità...",
                 privacyNoDataTitle: "Nessuna Raccolta Dati",
-                privacyNoDataText: "Non raccogliamo, tracciamo o memorizziamo alcuna tua informazione personale. Le immagini che carichi vengono elaborate direttamente nel tuo browser e non vengono salvate sui nostri server.",
+                privacyNoDataText: "Non raccogliamo, tracciamo o memorizziamo...",
                 privacyProcessingTitle: "Elaborazione Sicura e Volatile",
-                privacyProcessingText: "L'analisi dell'immagine avviene interamente sul tuo dispositivo (lato client). L'immagine viene inviata in modo sicuro ai server di Google esclusivamente per l'analisi da parte del modello di intelligenza artificiale. Questa applicazione non associa l'immagine a te né la memorizza dopo l'analisi.",
+                privacyProcessingText: "L'analisi dell'immagine avviene interamente...",
                 privacyDeletionTitle: "Cancellazione Automatica delle Informazioni",
-                privacyDeletionText: "Tutte le informazioni relative alla tua sessione, inclusa l'immagine caricata e i risultati dell'analisi, esistono solo temporaneamente nella memoria del tuo browser. Chiudendo la pagina del browser o la scheda dell'applicazione, tutti questi dati vengono eliminati in modo permanente e irrecuperabile. Nessuna informazione persiste dopo la chiusura della pagina.",
+                privacyDeletionText: "Tutte le informazioni relative alla tua sessione...",
                 privacyCookiesTitle: "Nessun Cookie di Tracciamento",
-                privacyCookiesText: "Questo sito non utilizza cookie o altre tecnologie simili per tracciare la tua attività di navigazione.",
-                privacyContact: "Per qualsiasi domanda o dubbio riguardo questa informativa, non esitare a contattare il proprietario del sito."
+                privacyCookiesText: "Questo sito non utilizza cookie...",
+                privacyContact: "Per qualsiasi domanda o dubbio..."
             },
             en: {
                 mainTitle: "Numismatic and Philatelic Analyzer",
                 mainSubtitle: "Upload a photo of a coin or stamp to get an AI analysis.",
                 coinLabel: "Coin",
                 stampLabel: "Stamp",
+                frontLabel: "Front",
+                backLabel: "Back",
                 uploadClick: "Click to upload",
                 uploadDrag: "or drag and drop",
+                uploadClickShort: "Upload image",
                 uploadFormats: "PNG, JPG, GIF up to 10MB",
                 analyzeButton: "Analyze",
+                resetButton: "Reset",
                 resultsTitle: "Analysis Results",
                 identificationLabel: "Identification",
                 periodLabel: "Period/Year of Issue",
@@ -286,27 +361,26 @@
                 privacyTitle: "Privacy Policy",
                 privacyDateLabel: "Effective date:",
                 privacyDate: "August 7, 2025",
-                privacyIntro: "Your privacy is our top priority. This application is designed to work without collecting, saving, or using any of your personal information or data.",
+                privacyIntro: "Your privacy is our top priority...",
                 privacyNoDataTitle: "No Data Collection",
-                privacyNoDataText: "We do not collect, track, or store any of your personal information. The images you upload are processed directly in your browser and are not saved on our servers.",
+                privacyNoDataText: "We do not collect, track, or store...",
                 privacyProcessingTitle: "Secure and Volatile Processing",
-                privacyProcessingText: "The image analysis occurs entirely on your device (client-side). The image is sent securely to Google's servers solely for analysis by the AI model. This application does not associate the image with you nor does it store it after the analysis.",
+                privacyProcessingText: "The image analysis occurs entirely...",
                 privacyDeletionTitle: "Automatic Information Deletion",
-                privacyDeletionText: "All information related to your session, including the uploaded image and analysis results, exists only temporarily in your browser's memory. By closing the browser page or the application tab, all this data is permanently and irretrievably deleted. No information persists after the page is closed.",
+                privacyDeletionText: "All information related to your session...",
                 privacyCookiesTitle: "No Tracking Cookies",
-                privacyCookiesText: "This site does not use cookies or other similar technologies to track your browsing activity.",
-                privacyContact: "For any questions or concerns regarding this policy, please do not hesitate to contact the site owner."
+                privacyCookiesText: "This site does not use cookies...",
+                privacyContact: "For any questions or concerns..."
             }
         };
 
-        // --- Funzione di Traduzione ---
+        // --- Funzioni Principali ---
+
         function setLanguage(lang) {
             currentLanguage = lang;
             document.documentElement.lang = lang;
-            
             langItBtn.classList.toggle('active', lang === 'it');
             langEnBtn.classList.toggle('active', lang === 'en');
-
             document.querySelectorAll('[data-key]').forEach(element => {
                 const key = element.getAttribute('data-key');
                 if (translations[lang] && translations[lang][key]) {
@@ -314,12 +388,100 @@
                 }
             });
         }
+        
+        function handleFile(file, type) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const base64Data = e.target.result.split(',')[1];
+                    if (type === 'front') {
+                        previewFront.src = e.target.result;
+                        previewFront.classList.remove('hidden');
+                        promptFront.classList.add('hidden');
+                        base64ImageDataFront = base64Data;
+                    } else if (type === 'back') {
+                        previewBack.src = e.target.result;
+                        previewBack.classList.remove('hidden');
+                        promptBack.classList.add('hidden');
+                        base64ImageDataBack = base64Data;
+                    } else if (type === 'stamp') {
+                        previewStamp.src = e.target.result;
+                        previewStamp.classList.remove('hidden');
+                        promptStamp.classList.add('hidden');
+                        base64ImageDataFront = base64Data; // Per i francobolli usiamo la variabile 'front'
+                        base64ImageDataBack = null;
+                    }
+                    checkAnalyzeButtonState();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert("Per favore, seleziona un file immagine valido.");
+            }
+        }
+
+        function toggleUploaderView(itemType) {
+            if (itemType === 'coin') {
+                coinUploaders.classList.remove('hidden');
+                stampUploader.classList.add('hidden');
+            } else {
+                coinUploaders.classList.add('hidden');
+                stampUploader.classList.remove('hidden');
+            }
+            resetApp();
+        }
+
+        function checkAnalyzeButtonState() {
+            const itemType = document.querySelector('input[name="item-type"]:checked').value;
+            if (itemType === 'coin') {
+                // Abilita se almeno una delle due facce è caricata
+                analyzeButton.disabled = !(base64ImageDataFront || base64ImageDataBack);
+            } else { // stamp
+                analyzeButton.disabled = !base64ImageDataFront;
+            }
+        }
+
+        function resetApp() {
+            // Reset Dati
+            base64ImageDataFront = null;
+            base64ImageDataBack = null;
+
+            // Reset UI Uploader
+            previewFront.src = '';
+            previewBack.src = '';
+            previewStamp.src = '';
+            previewFront.classList.add('hidden');
+            previewBack.classList.add('hidden');
+            previewStamp.classList.add('hidden');
+            promptFront.classList.remove('hidden');
+            promptBack.classList.remove('hidden');
+            promptStamp.classList.remove('hidden');
+            
+            // Reset Risultati
+            resultsContent.classList.add('hidden');
+            errorMessageEl.classList.add('hidden');
+            initialMessage.classList.remove('hidden');
+            identificationEl.textContent = '-';
+            periodEl.textContent = '-';
+            valueEstimateEl.textContent = '-';
+            
+            // Reset Pulsanti
+            analyzeButton.disabled = true;
+
+            // Reset input file per permettere di ricaricare lo stesso file
+            inputFront.value = '';
+            inputBack.value = '';
+            inputStamp.value = '';
+        }
+
+        // --- Event Listeners ---
 
         langItBtn.addEventListener('click', () => setLanguage('it'));
         langEnBtn.addEventListener('click', () => setLanguage('en'));
 
+        itemTypeRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => toggleUploaderView(e.target.value));
+        });
 
-        // --- Gestione Privacy Modal ---
         privacyLink.addEventListener('click', (e) => {
             e.preventDefault();
             privacyModal.classList.remove('hidden');
@@ -333,54 +495,18 @@
             }
         });
 
-        // --- Gestione Upload Immagine ---
-        imageUploader.addEventListener('click', () => fileInput.click());
-        imageUploader.addEventListener('dragover', (event) => {
-            event.preventDefault();
-            imageUploader.classList.add('border-blue-500', 'bg-gray-50');
-        });
-        imageUploader.addEventListener('dragleave', () => {
-            imageUploader.classList.remove('border-blue-500', 'bg-gray-50');
-        });
-        imageUploader.addEventListener('drop', (event) => {
-            event.preventDefault();
-            imageUploader.classList.remove('border-blue-500', 'bg-gray-50');
-            const files = event.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        });
-        fileInput.addEventListener('change', (event) => {
-            const files = event.target.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        });
+        uploaderFront.addEventListener('click', () => inputFront.click());
+        inputFront.addEventListener('change', (e) => handleFile(e.target.files[0], 'front'));
+        
+        uploaderBack.addEventListener('click', () => inputBack.click());
+        inputBack.addEventListener('change', (e) => handleFile(e.target.files[0], 'back'));
 
-        function handleFile(file) {
-            if (file && file.type.startsWith('image/')) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    imagePreview.src = e.target.result;
-                    imagePreview.classList.remove('hidden');
-                    uploadPrompt.classList.add('hidden');
-                    base64ImageData = e.target.result.split(',')[1];
-                    analyzeButton.disabled = false;
-                    resetResults();
-                };
-                reader.readAsDataURL(file);
-            } else {
-                alert("Per favore, seleziona un file immagine valido.");
-            }
-        }
+        uploaderStamp.addEventListener('click', () => inputStamp.click());
+        inputStamp.addEventListener('change', (e) => handleFile(e.target.files[0], 'stamp'));
 
-        // --- Gestione Analisi AI ---
+        resetButton.addEventListener('click', resetApp);
+
         analyzeButton.addEventListener('click', async () => {
-            if (!base64ImageData) {
-                alert("Per favore, carica prima un'immagine.");
-                return;
-            }
-
             showLoading(true);
             errorMessageEl.classList.add('hidden');
             
@@ -388,23 +514,31 @@
             
             const prompts = {
                 it: {
-                    coin: `Sei un esperto di numismatica di fama mondiale. Analizza l'immagine di questa moneta e fornisci le seguenti informazioni in un formato JSON con le chiavi "identificazione", "periodo", e "stima_valore". La tua risposta deve essere in italiano. - "identificazione": Fornisci una descrizione dettagliata della moneta (es. nome, impero, regnante, zecca). - "periodo": Indica l'anno o il secolo di conio. - "stima_valore": Fornisci una stima approssimativa del valore in Euro. Specifica che è solo una stima indicativa. Se non riesci a identificare la moneta, indicalo chiaramente.`,
-                    stamp: `Sei un esperto di filatelia di fama mondiale. Analizza l'immagine di questo francobollo e fornisci le seguenti informazioni in un formato JSON con le chiavi "identificazione", "periodo", e "stima_valore". La tua risposta deve essere in italiano. - "identificazione": Fornisci una descrizione dettagliata del francobollo (es. nome, serie, paese di emissione, soggetto). - "periodo": Indica l'anno di emissione. - "stima_valore": Fornisci una stima approssimativa del valore in Euro (specificando se nuovo, usato, ecc.). Specifica che è solo una stima indicativa. Se non riesci a identificare il francobollo, indicalo chiaramente.`
+                    coin_two_sides: `Sei un esperto di numismatica di fama mondiale. Analizza le due immagini di questa moneta (fronte e retro) e fornisci una risposta unica e completa in formato JSON con le chiavi "identificazione", "periodo", e "stima_valore". La tua risposta deve essere in italiano. - "identificazione": Descrizione dettagliata. - "periodo": Anno o secolo. - "stima_valore": Stima approssimativa in Euro.`,
+                    coin_one_side: `Sei un esperto di numismatica di fama mondiale. Analizza questa singola immagine di una faccia di una moneta. Fai del tuo meglio per identificarla e fornisci una risposta in formato JSON con le chiavi "identificazione", "periodo", e "stima_valore". Specifica nel campo "identificazione" che l'analisi è basata su una sola faccia e potrebbe essere incompleta. La tua risposta deve essere in italiano.`,
+                    stamp: `Sei un esperto di filatelia di fama mondiale. Analizza l'immagine di questo francobollo e fornisci le seguenti informazioni in un formato JSON...`
                 },
                 en: {
-                    coin: `You are a world-renowned numismatics expert. Analyze the image of this coin and provide the following information in a JSON format with the keys "identification", "period", and "value_estimate". Your response must be in English. - "identification": Provide a detailed description of the coin (e.g., name, empire, ruler, mint). - "period": Indicate the year or century of mintage. - "value_estimate": Provide an approximate value estimate in Euros. Specify that this is only an indicative estimate. If you cannot identify the coin, state it clearly.`,
-                    stamp: `You are a world-renowned philately expert. Analyze the image of this stamp and provide the following information in a JSON format with the keys "identification", "period", and "value_estimate". Your response must be in English. - "identification": Provide a detailed description of the stamp (e.g., name, series, country of issue, subject). - "period": Indicate the year of issue. - "value_estimate": Provide an approximate value estimate in Euros (specifying if mint, used, etc.). Specify that this is only an indicative estimate. If you cannot identify the stamp, state it clearly.`
+                    coin_two_sides: `You are a world-renowned numismatics expert. Analyze the two images of this coin (front and back) and provide a single, comprehensive response in JSON format with the keys "identification", "period", and "value_estimate". Your response must be in English. - "identification": Detailed description. - "period": Year or century. - "value_estimate": Approximate estimate in Euros.`,
+                    coin_one_side: `You are a world-renowned numismatics expert. Analyze this single image of one side of a coin. Do your best to identify it and provide a response in JSON format with the keys "identification", "period", and "value_estimate". Specify in the "identification" field that the analysis is based on only one side and may be incomplete. Your response must be in English.`,
+                    stamp: `You are a world-renowned philately expert. Analyze the image of this stamp and provide the following information in a JSON format...`
                 }
             };
-            const prompt = prompts[currentLanguage][itemType];
+
+            let prompt;
+            if (itemType === 'coin') {
+                prompt = (base64ImageDataFront && base64ImageDataBack) ? prompts[currentLanguage].coin_two_sides : prompts[currentLanguage].coin_one_side;
+            } else {
+                prompt = prompts[currentLanguage].stamp;
+            }
 
             try {
-                // Chiama la funzione Netlify invece dell'API di Google
                 const response = await fetch('/.netlify/functions/analyze', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        base64ImageData: base64ImageData,
+                        base64ImageDataFront: base64ImageDataFront,
+                        base64ImageDataBack: base64ImageDataBack,
                         prompt: prompt 
                     })
                 });
@@ -421,12 +555,10 @@
                     const parsedJson = JSON.parse(text);
                     displayResults(parsedJson);
                 } else {
-                    console.error("Risposta API non valida:", result);
                     showError("La risposta dell'API non è valida o è vuota. Riprova.");
                 }
 
             } catch (error) {
-                console.error('Errore durante l\'analisi:', error);
                 showError(`Si è verificato un errore: ${error.message}. Riprova.`);
             } finally {
                 showLoading(false);
@@ -459,17 +591,9 @@
             valueEstimateEl.textContent = '-';
         }
 
-        function resetResults() {
-            resultsContent.classList.add('hidden');
-            initialMessage.classList.remove('hidden');
-            errorMessageEl.classList.add('hidden');
-            identificationEl.textContent = '-';
-            periodEl.textContent = '-';
-            valueEstimateEl.textContent = '-';
-        }
-
-        // Imposta la lingua iniziale al caricamento
+        // --- Inizializzazione ---
         setLanguage('it');
+        toggleUploaderView('coin'); // Mostra l'uploader per monete all'inizio
     </script>
 </body>
 </html>

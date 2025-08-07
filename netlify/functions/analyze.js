@@ -1,7 +1,6 @@
 // File: netlify/functions/analyze.js
 // Questo codice viene eseguito sui server di Netlify, non nel browser.
 
-// Netlify gestisce 'node-fetch' automaticamente per le funzioni.
 const fetch = require('node-fetch');
 
 exports.handler = async function (event) {
@@ -11,11 +10,10 @@ exports.handler = async function (event) {
   }
 
   try {
-    // Prende i dati inviati dal frontend (l'immagine e il prompt)
-    const { base64ImageData, prompt } = JSON.parse(event.body);
-
+    // Prende i dati inviati dal frontend. 'base64ImageDataBack' può essere null.
+    const { base64ImageDataFront, base64ImageDataBack, prompt } = JSON.parse(event.body);
+    
     // Prende la chiave API segreta dalle Variabili d'Ambiente di Netlify
-    // Questo è il passaggio cruciale per la sicurezza.
     const apiKey = process.env.GEMINI_API_KEY;
 
     if (!apiKey) {
@@ -29,14 +27,21 @@ exports.handler = async function (event) {
 
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
-    // Definisce il corpo della richiesta da inviare a Gemini
+    // Costruisce dinamicamente le parti della richiesta per Gemini
+    const parts = [
+      { text: prompt },
+      // Aggiunge sempre la prima immagine (fronte o francobollo)
+      { inlineData: { mimeType: "image/jpeg", data: base64ImageDataFront } }
+    ];
+
+    // Se c'è una seconda immagine (il retro della moneta), la aggiunge alla richiesta
+    if (base64ImageDataBack) {
+      parts.push({ text: "Questa è l'altra faccia della moneta (retro)." });
+      parts.push({ inlineData: { mimeType: "image/jpeg", data: base64ImageDataBack } });
+    }
+
     const payload = {
-      contents: [{
-        parts: [
-          { text: prompt },
-          { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
-        ]
-      }],
+      contents: [{ parts: parts }],
       generationConfig: {
         responseMimeType: "application/json",
       }
