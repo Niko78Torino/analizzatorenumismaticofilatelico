@@ -1,8 +1,7 @@
 // File: netlify/functions/analyze.js
 // Questo codice viene eseguito sui server di Netlify, non nel browser.
 
-// Importa il modulo 'fetch' se stai usando una versione di Node.js che non lo include di default.
-// Netlify di solito lo gestisce, ma è una buona pratica.
+// Netlify gestisce 'node-fetch' automaticamente per le funzioni.
 const fetch = require('node-fetch');
 
 exports.handler = async function (event) {
@@ -30,9 +29,23 @@ exports.handler = async function (event) {
 
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
+    // Definisce il corpo della richiesta da inviare a Gemini
     const payload = {
       contents: [{
-        paers: { 'Content-Type': 'application/json' },
+        parts: [
+          { text: prompt },
+          { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
+        ]
+      }],
+      generationConfig: {
+        responseMimeType: "application/json",
+      }
+    };
+
+    // Esegue la vera chiamata all'API di Gemini, dal server sicuro di Netlify
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
 
@@ -66,17 +79,3 @@ exports.handler = async function (event) {
     };
   }
 };
-rts: [
-          { text: prompt },
-          { inlineData: { mimeType: "image/jpeg", data: base64ImageData } }
-        ]
-      }],
-      generationConfig: {
-        responseMimeType: "application/json",
-      }
-    };
-
-    // Esegue la vera chiamata all'API di Gemini, dal server sicuro di Netlify
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      head
